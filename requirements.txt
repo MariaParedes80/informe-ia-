@@ -1,0 +1,8 @@
+text
+streamlit
+matplotlib
+seaborn
+pandas
+numpy
+httpx
+ollama
