@@ -1,56 +1,46 @@
 import pandas as pd
 
 def agente_analista(*args, **kwargs):
-    # 1. Capturar la pregunta de forma ultra-segura (revisando todas las estructuras posibles de Streamlit)
+    # 1. Buscador avanzado de texto dentro de CUALQUIER parámetro que envíe la interfaz
     pregunta_texto = ""
     
+    # Buscar dentro de los argumentos posicionales (*args)
     if args:
-        # Convertimos todo el contenido de args a texto para buscar palabras clave
-        pregunta_texto = " ".join([str(arg) for arg in args]).lower()
+        pregunta_texto += " " + " ".join([str(arg) for arg in args]).lower()
     
-    # También revisamos si viene dentro de kwargs (como prompt o question)
-    for llave, valor in kwargs.items():
-        pregunta_texto += " " + str(valor).lower()
-        
-    # Si por alguna razón sigue vacío, usamos un texto por defecto para que no falle
-    if not pregunta_texto.strip():
-        pregunta_texto = "general"
+    # Buscar dentro de absolutamente todos los argumentos con nombre (**kwargs)
+    if kwargs:
+        for llave, valor in kwargs.items():
+            pregunta_texto += " " + str(valor).lower()
+            
+    # CONTROL CRÍTICO: Si la interfaz de Streamlit está llamando a la función de manera 
+    # vacía o estática (ej: agente_analista()), este bloque forzará la respuesta del Titanic.
+    if not pregunta_texto.strip() or "general" in pregunta_texto:
+        try:
+            df = pd.read_csv("dataset.csv")
+            filas, columnas = df.shape
+            return f"¡Conexión lista! Tu dataset del Titanic tiene {filas} filas y {columnas} columnas. Por favor, asegúrate de pasar la variable del cuadro de texto dentro de los paréntesis al llamar a agente_analista(pregunta) en tu app.py."
+        except:
+            return "El agente está listo pero no se pudo leer 'dataset.csv'. Verifica el archivo."
 
+    # 2. Procesamiento de respuestas si se detecta texto dinámico
     try:
-        # 2. Cargar el dataset usando el nombre correcto con extensión
-        df = pd.read_csv("dataset.csv") 
-        
-        # 3. Calcular las métricas reales de la matriz
+        df = pd.read_csv("dataset.csv")
         filas, columnas = df.shape
         total_pasajeros = len(df)
-        sobrevivientes = df['Survived'].sum() if 'Survived' in df.columns else 0
-        tasa_supervivencia = (sobrevivientes / total_pasajeros) * 100 if total_pasajeros > 0 else 0
 
-        # 4. RESPUESTAS DINÁMICAS (Evaluamos de lo más específico a lo más general)
-        
-        # Respuesta para: "cuántas filas y columnas", "matriz", "tamaño", "dimensiones"
+        # Respuesta exacta para: Filas, Columnas o Matriz
         if "fila" in pregunta_texto or "columna" in pregunta_texto or "matriz" in pregunta_texto or "dimension" in pregunta_texto:
-            return f"La matriz del dataset del Titanic cuenta actualmente con un total de {filas} filas (registros de pasajeros) y {columnas} columnas (variables analizadas)."
+            return f"La matriz del dataset contiene exactamente {filas} filas (registros de pasajeros) y {columnas} columnas (variables)."
 
-        # Respuesta para: "sobrevivientes", "tasa", "cuántos vivieron"
+        # Respuesta exacta para: Sobrevivientes
         if "sobrev" in pregunta_texto or "tasa" in pregunta_texto or "vivieron" in pregunta_texto:
-            return f"Analizando el dataset del Titanic: Se registraron {total_pasajeros} pasajeros. De ellos, lograron sobrevivir {sobrevivientes}, lo que representa una tasa de supervivencia del {tasa_supervivencia:.2f}%."
-        
-        # Respuesta para: "mujeres", "hombres", "sexo", "género"
-        if "mujer" in pregunta_texto or "hombre" in pregunta_texto or "sexo" in pregunta_texto or "genero" in pregunta_texto:
-            if 'Sex' in df.columns and 'Survived' in df.columns:
-                mujeres_sobrevivientes = len(df[(df['Sex'] == 'female') & (df['Survived'] == 1)])
-                return f"En los datos analizados del Titanic, las mujeres tuvieron prioridad de rescate. Del total de personas que se salvaron, {mujeres_sobrevivientes} fueron mujeres."
-            return "El dataset no contiene las columnas de género ('Sex') para realizar este análisis."
+            sobrevivientes = df['Survived'].sum() if 'Survived' in df.columns else 0
+            tasa = (sobrevivientes / total_pasajeros) * 100 if total_pasajeros > 0 else 0
+            return f"El dataset registra {total_pasajeros} pasajeros. De ellos sobrevivieron {sobrevivientes} (Tasa: {tasa:.2f}%)."
 
-        # Respuesta para: "clase", "primera clase", "boleto"
-        if "clase" in pregunta_texto or "ticket" in pregunta_texto or "boleto" in pregunta_texto:
-            return "El análisis por clases muestra que los pasajeros de Primera Clase tuvieron un porcentaje de supervivencia significativamente mayor en comparación con los de Tercera Clase debido a la cercanía a los botes."
+        # Si el texto ingresado no coincide con ninguna regla anterior
+        return f"Recibí tu consulta: '{pregunta_texto.strip()}'. Analizando la matriz de {filas}x{columnas}, ¿deseas conocer los sobrevivientes, género o clases?"
 
-        # Respuesta por defecto si la pregunta es muy abierta o genérica
-        return f"Este es el asistente de IA para el dataset del Titanic (Matriz de {filas}x{columnas}). Puedes preguntarme sobre la tasa de supervivencia, distribución por géneros, análisis de clases o las dimensiones de la tabla."
-
-    except FileNotFoundError:
-        return "Conexión exitosa con el agente, pero no se encontró el archivo 'dataset.csv' en la raíz del proyecto. Por favor, verifica la ruta."
     except Exception as e:
-        return f"Ocurrió un inconveniente al analizar los datos: {str(e)}"
+        return f"Error leyendo los datos de la matriz: {str(e)}"
