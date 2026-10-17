@@ -14,7 +14,7 @@ try:
     total_pasajeros = len(df)
 
     # 3. SECCIÓN DE MÉTRICAS Y TABLA DE DATOS (Lado izquierdo)
-    col1, col2 = st.columns([1, 1])
+    col1, col2 = st.columns()
 
     with col1:
         st.subheader("Métricas del Archivo")
@@ -49,7 +49,7 @@ try:
             st.pyplot(fig)
 
     # =======================================================
-    # 5. SECCIÓN DEL AGENTE IA (Integrado y dinámico al final)
+    # 5. SECCIÓN DEL AGENTE IA (Con prioridades corregidas)
     # =======================================================
     st.write("---")  # Línea divisoria visual
     st.subheader("🤖 Consulta Avanzada con Agente IA")
@@ -63,12 +63,8 @@ try:
     if pregunta_usuario:
         texto_limpio = pregunta_usuario.lower().strip()
         
-        # Condición A: Si el usuario pregunta de qué se trata el archivo o por el Titanic
-        if "titanic" in texto_limpio or "de que se trata" in texto_limpio or "que es" in texto_limpio:
-            st.info(f"¡Confirmado! Este es el dataset oficial del Titanic. Contiene datos reales de {total_pasajeros} pasajeros con {columnas} variables técnicas como edad, sexo, tarifa del boleto y estado de supervivencia.")
-            
-        # Condición B: Si el usuario pregunta por la tasa de supervivencia o sobrevivientes
-        elif "sobrev" in texto_limpio or "tasa" in texto_limpio or "vivieron" in texto_limpio or "salvaron" in texto_limpio:
+        # PRIORIDAD 1: Si pregunta por la tasa de supervivencia, sobrevivientes o porcentajes
+        if "sobrev" in texto_limpio or "tasa" in texto_limpio or "vivieron" in texto_limpio or "salvaron" in texto_limpio or "porcentaje" in texto_limpio:
             if 'Survived' in df.columns:
                 sobrevivientes = df['Survived'].sum()
                 tasa = (sobrevivientes / total_pasajeros) * 100
@@ -76,11 +72,7 @@ try:
             else:
                 st.warning("La columna 'Survived' (Supervivencia) no se encuentra disponible en este archivo.")
                 
-        # Condición C: Si el usuario pregunta por las dimensiones, filas o columnas de la matriz
-        elif "cuantas filas" in texto_limpio or "dimension" in texto_limpio or "matriz" in texto_limpio or "columna" in texto_limpio or "tamaño" in texto_limpio:
-            st.info(f"La matriz del dataset del Titanic cuenta exactamente con un total de {filas} filas (registros de pasajeros) y {columnas} columnas (variables analizadas).")
-            
-        # Condición D: Si pregunta por género (mujeres u hombres)
+        # PRIORIDAD 2: Si pregunta por género (mujeres u hombres)
         elif "mujer" in texto_limpio or "hombre" in texto_limpio or "sexo" in texto_limpio or "genero" in texto_limpio:
             if 'Sex' in df.columns and 'Survived' in df.columns:
                 mujeres_totales = len(df[df['Sex'] == 'female'])
@@ -89,6 +81,14 @@ try:
             else:
                 st.warning("Las variables de género no están completamente disponibles en este archivo.")
                 
+        # PRIORIDAD 3: Si pregunta por las dimensiones, filas o columnas de la matriz
+        elif "cuantas filas" in texto_limpio or "dimension" in texto_limpio or "matriz" in texto_limpio or "columna" in texto_limpio or "tamaño" in texto_limpio:
+            st.info(f"La matriz del dataset del Titanic cuenta exactamente con un total de {filas} filas (registros de pasajeros) y {columnas} columnas (variables analizadas).")
+            
+        # PRIORIDAD 4: Si pregunta de qué se trata el archivo de forma general o menciona solo la palabra "titanic"
+        elif "titanic" in texto_limpio or "de que se trata" in texto_limpio or "que es" in texto_limpio:
+            st.info(f"¡Confirmado! Este es el dataset oficial del Titanic. Contiene datos reales de {total_pasajeros} pasajeros con {columnas} variables técnicas como edad, sexo, tarifa del boleto y estado de supervivencia.")
+            
         # Condición por defecto si hace una pregunta diferente
         else:
             st.info(f"Procesando consulta técnica: '{pregunta_usuario}'. Actualmente puedo responderte datos exactos si me preguntas por: '¿Cuál es la tasa de sobrevivientes?', '¿Cuántas filas tiene la matriz?' o '¿De qué se trata el dataset?'")
