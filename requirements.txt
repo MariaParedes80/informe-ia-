@@ -3,5 +3,3 @@ streamlit
 matplotlib
 seaborn
 pandas
-numpy
-httpx
