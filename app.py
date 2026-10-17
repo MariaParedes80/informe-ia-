@@ -49,7 +49,7 @@ try:
             st.pyplot(fig)
 
     # =======================================================
-    # 5. SECCIÓN DEL AGENTE IA (Prioridades corregidas para Ollama)
+    # 5. SECCIÓN DEL AGENTE IA (Prioridades corregidas para Ollama 3.2:3b)
     # =======================================================
     st.write("---")  # Línea divisoria visual
     st.subheader("🤖 Consulta Avanzada con Agente IA (Powered by Ollama)")
@@ -102,7 +102,7 @@ try:
     with col_inf1:
         st.markdown("### 📁 Información del Repositorio de Entrega")
         st.markdown("""
-        * **Proyecto:** `informe-ia`
+        * **Proyecto:** `Proyecto-final`
         * **Rama de despliegue:** `main`
         * **Plataforma de código:** GitHub
         * **Servidor de producción:** Streamlit Cloud (Seguro y Autónomo)
@@ -112,7 +112,7 @@ try:
         st.markdown("### 🛠️ Tecnologías Utilizadas")
         st.markdown("""
         * **Lenguaje:** Python 3
-        * **Inteligencia Artificial:** `Ollama` (Modelo LLM Local y Privado)
+        * **Inteligencia Artificial:** `Ollama3.2:3b` (Modelo LLM Local y Privado)
         * **Análisis de Datos:** `pandas`
         * **Visualización:** `matplotlib` & `streamlit`
         """)
