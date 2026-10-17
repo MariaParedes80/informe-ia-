@@ -13,8 +13,8 @@ try:
     filas, columnas = df.shape
     total_pasajeros = len(df)
 
-    # 3. SECCIÓN DE MÉTRICAS Y TABLA DE DATOS (Lado izquierdo)
-    col1, col2 = st.columns()
+    # 3. SECCIÓN DE MÉTRICAS Y TABLA DE DATOS (Dividido en 2 columnas fijas)
+    col1, col2 = st.columns(2)  # <-- ¡AQUÍ COLOCAMOS EL 2 QUE REPARA EL ERROR!
 
     with col1:
         st.subheader("Métricas del Archivo")
