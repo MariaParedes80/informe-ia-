@@ -11,7 +11,7 @@ def agente_analista(*args, **kwargs):
     try:
         # 2. Cargar el dataset del Titanic (Asegúrate de que la ruta coincida con tu archivo .csv)
         # Si está en otra carpeta, ajusta la ruta como 'src/titanic.csv' o 'data/titanic.csv'
-        df = pd.read_csv("titanic.csv") 
+        df = pd.read_csv("dataset") 
         
         # 3. Calcular métricas reales en vivo para responder de forma inteligente
         total_pasajeros = len(df)
