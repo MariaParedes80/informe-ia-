@@ -2,7 +2,7 @@ import streamlit as st  # <-- ¡ESTA LÍNEA ES LA QUE FALTA Y REPARA EL ERROR!
 import pandas as pd
 
 # ==========================================
-# CUADRO DE TEXTO INTEGRADO (SOLUCIÓN)
+# CUADRO DE TEXTO INTEGRADO PARA EL AGENTE
 # ==========================================
 pregunta_usuario = st.text_input(
     "Hazle una pregunta técnica al Agente sobre el dataset:", 
@@ -20,7 +20,7 @@ if pregunta_usuario:
         
         # 1. Si pregunta por el Titanic o qué es
         if "titanic" in texto_limpio or "de que se trata" in texto_limpio:
-            st.info(f"¡Confirmado desde app.py! Este es el dataset oficial del Titanic. Contiene datos reales de {total} pasajeros con {columnas} variables técnicas como edad, sexo y supervivencia.")
+            st.info(f"¡Confirmado! Este es el dataset oficial del Titanic. Contiene datos reales de {total} pasajeros con {columnas} variables técnicas como edad, sexo y supervivencia.")
             
         # 2. Si pregunta por sobrevivientes
         elif "sobrev" in texto_limpio or "tasa" in texto_limpio or "vivieron" in texto_limpio:
