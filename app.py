@@ -77,3 +77,11 @@ if pregunta:
             st.warning(str(model_err))
         except Exception as e:
             st.error(f"❌ Error inesperado: {e}")
+
+# 1. Creamos la caja de texto y guardamos lo que escribe el usuario en la variable 'pregunta_usuario'
+pregunta_usuario = st.text_input("Hazle una pregunta técnica al Agente sobre el dataset:")
+
+# 2. Solo si el usuario escribió algo, llamamos al agente pasándole SU pregunta
+if pregunta_usuario:
+    respuesta = agente_analista(pregunta_usuario) # <-- ¡Aquí debe ir la variable, SIN COMILLAS!
+    st.write(respuesta)
