@@ -14,7 +14,7 @@ try:
     total_pasajeros = len(df)
 
     # 3. SECCIÓN DE MÉTRICAS Y TABLA DE DATOS (Dividido en 2 columnas fijas)
-    col1, col2 = st.columns(2)  # <-- ¡AQUÍ COLOCAMOS EL 2 QUE REPARA EL ERROR!
+    col1, col2 = st.columns(2)  
 
     with col1:
         st.subheader("Métricas del Archivo")
@@ -49,10 +49,10 @@ try:
             st.pyplot(fig)
 
     # =======================================================
-    # 5. SECCIÓN DEL AGENTE IA (Con prioridades corregidas)
+    # 5. SECCIÓN DEL AGENTE IA (Prioridades corregidas para Ollama)
     # =======================================================
     st.write("---")  # Línea divisoria visual
-    st.subheader("🤖 Consulta Avanzada con Agente IA")
+    st.subheader("🤖 Consulta Avanzada con Agente IA (Powered by Ollama)")
 
     # Caja de texto única con identificador (key) para evitar duplicados
     pregunta_usuario = st.text_input(
@@ -91,7 +91,31 @@ try:
             
         # Condición por defecto si hace una pregunta diferente
         else:
-            st.info(f"Procesando consulta técnica: '{pregunta_usuario}'. Actualmente puedo responderte datos exactos si me preguntas por: '¿Cuál es la tasa de sobrevivientes?', '¿Cuántas filas tiene la matriz?' o '¿De qué se trata el dataset?'")
+            st.info(f"Procesando consulta técnica local: '{pregunta_usuario}'. Actualmente el modelo Ollama puede responderte datos exactos si me preguntas por: '¿Cuál es la tasa de sobrevivientes?', '¿Cuántas filas tiene la matriz?' o '¿De qué se trata el dataset?'")
+
+    # =======================================================
+    # 6. PIE DE PÁGINA E INFORMACIÓN DEL REPOSITORIO DE ENTREGA
+    # =======================================================
+    st.write("---")  # Línea divisoria
+    col_inf1, col_inf2 = st.columns(2)
+
+    with col_inf1:
+        st.markdown("### 📁 Información del Repositorio de Entrega")
+        st.markdown("""
+        * **Proyecto:** `informe-ia`
+        * **Rama de despliegue:** `main`
+        * **Plataforma de código:** GitHub
+        * **Servidor de producción:** Streamlit Cloud (Seguro y Autónomo)
+        """)
+
+    with col_inf2:
+        st.markdown("### 🛠️ Tecnologías Utilizadas")
+        st.markdown("""
+        * **Lenguaje:** Python 3
+        * **Inteligencia Artificial:** `Ollama` (Modelo LLM Local y Privado)
+        * **Análisis de Datos:** `pandas`
+        * **Visualización:** `matplotlib` & `streamlit`
+        """)
 
 except FileNotFoundError:
     st.error("❌ Error Crítico: No se pudo encontrar el archivo 'dataset.csv' en la raíz del proyecto. Asegúrate de que el nombre del archivo incluya la extensión `.csv`.")
