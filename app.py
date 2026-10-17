@@ -80,4 +80,21 @@ if pregunta:
 
 # 1. Creamos la caja de texto y guardamos lo que escribe el usuario en la variable 'pregunta_usuario'
 #pregunta_usuario = st.text_input("Hazle una pregunta técnica al Agente sobre el dataset:")
+# ==========================================
+# SECCIÓN DEL AGENTE ANALISTA DE IA
+# ==========================================
+
+# Usamos el parámetro 'key' para evitar el error 'StreamlitDuplicateElementId'
+pregunta_usuario = st.text_input(
+    "Hazle una pregunta técnica al Agente sobre el dataset:", 
+    key="caja_consulta_titanic"
+)
+
+# Solo si el usuario escribe una pregunta y presiona Enter
+if pregunta_usuario:
+    # Llamamos a la función pasándole de forma dinámica el texto ingresado
+    respuesta_agente = agente_analista(pregunta_usuario)
+    
+    # Mostramos la respuesta en la interfaz gráfica
+    st.info(respuesta_agente)
 
