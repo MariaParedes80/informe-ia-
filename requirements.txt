@@ -5,4 +5,3 @@ seaborn
 pandas
 numpy
 httpx
-ollama
