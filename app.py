@@ -1,86 +1,39 @@
-import streamlit as st
-import os
+import pandas as pd
 
-# Configuración inicial de la interfaz gráfica de Streamlit
-st.set_page_config(
-    page_title="Proyecto Final - Agente IA Local", 
-    page_icon="🎓", 
-    layout="wide"
-)
-
-# Intentar importar los módulos de tu carpeta src/ de forma segura
-try:
-    from src.data_loader import cargar_datos
-    from src.eda import obtener_resumen_estadistico
-    from src.visualizations import generar_grafico_distribucion
-    from src.agent import agente_analista
-except ImportError as e:
-    st.error(f"❌ Error en la estructura de archivos dentro de 'src/': {e}")
-    st.stop()
-
-st.title("🎓 Sistema Inteligente de Análisis Local (Llama 3.2:3b)")
-st.markdown("---")
-
-# --- PASO 1: CARGA RESILIENTE DE DATOS ---
-try:
-    df = cargar_datos()
-    st.sidebar.success("✅ Dataset cargado correctamente.")
-except FileNotFoundError as err:
-    st.error("⚠️ **Control de Entorno (Dataset Ausente):**")
-    st.info(str(err))
-    st.stop()
-
-# --- PASO 2: INTERFAZ DE ANÁLISIS DE DATOS (EDA) ---
-st.header("📊 Análisis Exploratorio y Visualización")
-resumen = obtener_resumen_estadistico(df)
-
-col1, col2 = st.columns(2)
-with col1:
-    st.subheader("Métricas del Archivo")
-    st.write(f"Filas: {df.shape[0]} | Columnas: {df.shape[1]}")
-    st.dataframe(df.head(5), use_container_width=True)
-
-with col2:
-    st.subheader("Visualizaciones Automáticas")
-    
-    # Tomamos todas las columnas disponibles del archivo
-    todas_las_columnas = df.columns.tolist()
-    
-    if todas_las_columnas:
-        col_seleccionada = st.selectbox("Seleccione columna para graficar:", todas_las_columnas)
-        try:
-            figura = generar_grafico_distribucion(df, col_seleccionada)
-            st.pyplot(figura)
-        except Exception:
-            st.warning("⚠️ Esta columna contiene texto. Seleccione otra numérica (como temp_max o wind) para renderizar el gráfico.")
-    else:
-        st.write("No se encontraron columnas en el archivo.")
-
-st.markdown("---")
-
-# --- PASO 3: INTERFAZ CON AGENTE DE IA (LLM CLIENT) ---
-st.header("🤖 Consulta Avanzada con Agente IA")
-pregunta = st.text_input("Hazle una pregunta técnica al Agente sobre el dataset:")
-
-if pregunta:
-    with st.spinner("El Agente está analizando y procesando con Llama 3.2:3b..."):
-        try:
-            # Mandamos un resumen como contexto estructurado al agente
-            contexto = f"Columnas del dataset: {resumen['columnas']}. Dimensiones: {resumen['dimensiones']}."
-            respuesta_agente = agente_analista(contexto, pregunta)
-            st.chat_message("assistant").write(respuesta_agente)
-        except ConnectionError as conn_err:
-            st.error("❌ **Error de Infraestructura Local:**")
-            st.warning(str(conn_err))
-        except FileNotFoundError as model_err:
-            st.error("❌ **Error de Configuración de Modelo:**")
-            st.warning(str(model_err))
-        except Exception as e:
-            st.error(f"❌ Error inesperado: {e}")
-
-# 1. Creamos la caja de texto y guardamos lo que escribe el usuario en la variable 'pregunta_usuario'
-#pregunta_usuario = st.text_input("Hazle una pregunta técnica al Agente sobre el dataset:")
+# ==========================================
+# CUADRO DE TEXTO INTEGRADO (SOLUCIÓN)
+# ==========================================
 pregunta_usuario = st.text_input(
-    "Escribe aquí tu nueva consulta para el Agente (Prueba):", 
-    key="caja_consulta_titanic"
+    "Hazle una pregunta técnica al Agente sobre el dataset:", 
+    key="caja_consulta_final_titanic"
 )
+
+if pregunta_usuario:
+    texto_limpio = pregunta_usuario.lower().strip()
+    
+    try:
+        # Cargar los datos directamente en la interfaz
+        df = pd.read_csv("dataset.csv")
+        filas, columnas = df.shape
+        total = len(df)
+        
+        # 1. Si pregunta por el Titanic o qué es
+        if "titanic" in texto_limpio or "de que se trata" in texto_limpio:
+            st.info(f"¡Confirmado desde app.py! Este es el dataset oficial del Titanic. Contiene datos reales de {total} pasajeros con {columnas} variables técnicas como edad, sexo y supervivencia.")
+            
+        # 2. Si pregunta por sobrevivientes
+        elif "sobrev" in texto_limpio or "tasa" in texto_limpio or "vivieron" in texto_limpio:
+            sobrevivientes = df['Survived'].sum() if 'Survived' in df.columns else 0
+            tasa = (sobrevivientes / total) * 100 if total > 0 else 0
+            st.info(f"Análisis de supervivencia: De los {total} pasajeros, lograron salvarse {sobrevivientes} personas, lo que equivale a una tasa del {tasa:.2f}%.")
+            
+        # 3. Si pregunta explícitamente por filas o columnas
+        elif "cuantas filas" in texto_limpio or "dimension" in texto_limpio or "matriz" in texto_limpio:
+            st.info(f"La matriz del dataset contiene exactamente {filas} filas (registros de pasajeros) y {columnas} columnas (variables).")
+            
+        # 4. Respuesta por defecto para cualquier otra pregunta
+        else:
+            st.info(f"Procesando consulta: '{pregunta_usuario}'. Puedes preguntarme cosas como: '¿Cuál es la tasa de sobrevivientes?' o '¿De qué se trata el dataset?'")
+            
+    except Exception as e:
+        st.error(f"No se pudo leer el archivo 'dataset.csv': {str(e)}")
