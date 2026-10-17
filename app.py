@@ -1,3 +1,4 @@
+import streamlit as st  # <-- ¡ESTA LÍNEA ES LA QUE FALTA Y REPARA EL ERROR!
 import pandas as pd
 
 # ==========================================
